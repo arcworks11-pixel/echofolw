@@ -460,6 +460,75 @@ input:checked + .slider:before {
     margin-bottom: 6px;
 }
 
+/* Benefits Section */
+.benefits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.benefit-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.benefit-icon {
+    font-size: 1.2rem;
+    background: #f1f3f5;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.benefit-info strong {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    margin-bottom: 2px;
+}
+
+.benefit-info p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+/* Footer */
+.app-footer {
+    margin-top: 60px;
+    padding: 40px 20px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.footer-content p {
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer-links a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
 @media (max-width: 800px) {
     body {
         padding: calc(var(--spacing-unit) * 2);

@@ -35,6 +35,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportBtn = document.getElementById('exportBtn');
     const importBtn = document.getElementById('importBtn');
     const importFile = document.getElementById('importFile');
+    
+    // --- 言語対応 (i18n) ---
+    const userLang = navigator.language || navigator.userLanguage;
+    if (!userLang.startsWith('ja')) {
+        document.querySelectorAll('[data-en]').forEach(el => {
+            el.textContent = el.getAttribute('data-en');
+        });
+        document.querySelectorAll('[data-en-placeholder]').forEach(el => {
+            el.placeholder = el.getAttribute('data-en-placeholder');
+        });
+    }
 
     let anchors = JSON.parse(localStorage.getItem('echoflow_anchors')) || [];
     anchors.sort((a, b) => a.time - b.time);
@@ -123,7 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const newScript = syncData.map(item => `[${formatTime(item.time)}] ${item.original}`).join('\n');
         scriptInput.value = newScript;
         localStorage.setItem('echoflow_script', newScript);
-        alert('同期完了！Viewモードへ移動できます。');
+        const msg = userLang.startsWith('ja') ? '同期完了！Viewモードへ移動できます。' : 'Sync completed! You can move to View mode.';
+        alert(msg);
     }
 
     // --- 2. View ---
@@ -339,7 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onload = (event) => {
             try {
                 const data = JSON.parse(event.target.result);
-                if (confirm('現在のデータを上書きして、教材を読み込みますか？')) {
+                const confirmMsg = userLang.startsWith('ja') ? '現在のデータを上書きして、教材を読み込みますか？' : 'Overwrite current data and load this lesson?';
+                if (confirm(confirmMsg)) {
                     scriptInput.value = data.script1 || '';
                     scriptInput2.value = data.script2 || '';
                     noteInput.value = data.notes || '';
@@ -353,10 +366,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     renderAnchors();
                     renderAnchorMarkers();
-                    alert('読み込みが完了しました！');
+                    const doneMsg = userLang.startsWith('ja') ? '読み込みが完了しました！' : 'Import completed!';
+                    alert(doneMsg);
                 }
             } catch (err) {
-                alert('ファイルの形式が正しくありません。');
+                const errMsg = userLang.startsWith('ja') ? 'ファイルの形式が正しくありません。' : 'Invalid file format.';
+                alert(errMsg);
             }
         };
         reader.readAsText(file);
