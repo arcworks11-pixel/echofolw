@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoFlow | スマート語学学習・シャドーイングツール</title>
+    <meta name="description"
+        content="EchoFlowは、音声や動画を使って効率的にリスニング・シャドーイング練習ができるスマート学習ツールです。字幕の自動スクロール、2レイヤー表示、アンカー機能を備えています。">
+    <meta name="keywords" content="シャドーイング, リスニング, 語学学習, 英語学習, 字幕, EchoFlow">
+
+    <!-- Open Graph (SNSでの見え方) -->
+    <meta property="og:title" content="EchoFlow | スマート語学学習ツール">
+    <meta property="og:description" content="音声・動画と連動するスマート字幕ツール。学習をより効率的に、より楽しく。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io/echoflow/">
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- ファビコン: 手軽に絵文字をアイコンに設定 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
+
+    <!-- Google Analytics (GA4) 導入用プレースホルダ -->
+    <!-- 
+    <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_MEASUREMENT_ID"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'YOUR_MEASUREMENT_ID');
+    </script> 
+    -->
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- 左側：メイン学習 -->
+        <main class="glass-card">
+            <header>
+                <h1>EchoFlow</h1>
+                <div id="playerErrorMessage" style="display: none;"></div>
+            </header>
+
+            <section class="player-container">
+                <div class="file-management-grid">
+                    <div class="file-input-group">
+                        <p class="section-title">1. Media Source</p>
+                        <label for="audioUpload" class="custom-file-upload">
+                            <span>📁 選択してください</span>
+                            <input type="file" id="audioUpload" accept="audio/*,video/*">
+                        </label>
+                    </div>
+
+                    <div class="file-input-group">
+                        <p class="section-title">2. Lesson Data</p>
+                        <div class="data-action-buttons">
+                            <button id="exportBtn" class="btn-action" title="教材を保存">💾 保存</button>
+                            <button id="importBtn" class="btn-action" title="教材を読込">📂 読込</button>
+                        </div>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="custom-player-ui">
+                    <video id="videoPlayer" style="display:none;" playsinline webkit-playsinline></video>
+
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+
+                    <div class="time-display">
+                        <span id="currentTime">00:00</span> / <span id="duration">00:00</span>
+                    </div>
+
+                    <div class="controls">
+                        <button id="addAnchorBtn" class="btn-secondary" title="アンカー追加">⚑</button>
+                        <button id="rewindBtn" class="btn-secondary">↺</button>
+                        <button id="playPauseBtn" class="btn-play">▶</button>
+                        <button id="forwardBtn" class="btn-secondary">↻</button>
+                        <button id="muteBtn" class="btn-secondary" title="消音切替">🔊</button>
+
+                        <select id="playbackSpeed" class="tab-btn">
+                            <option value="0.5">0.5x</option>
+                            <option value="0.8">0.8x</option>
+                            <option value="1.0" selected>1.0x</option>
+                            <option value="1.2">1.2x</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="2.0">2.0x</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="script-section">
+                <div class="mode-tabs">
+                    <button id="editModeBtn" class="tab-btn active">1. Edit (文章入力)</button>
+                    <button id="syncModeBtn" class="tab-btn">2. Sync (時間記録)</button>
+                    <button id="viewModeBtn" class="tab-btn">3. View (学習)</button>
+                </div>
+
+                <div id="editContainer">
+                    <p class="section-title">Layer 1 (Original / Timestamps)</p>
+                    <textarea id="scriptInput" placeholder="[00:10] Hello... の形式で入力"></textarea>
+
+                    <p class="section-title" style="margin-top:20px;">Layer 2 (Translation / Optional)</p>
+                    <textarea id="scriptInput2" placeholder="Layer 1と同じ行数で訳を入力してください（時間は不要）"></textarea>
+                </div>
+
+                <div id="syncViewer" class="subtitle-viewer">
+                    <button id="syncMarkBtn" class="btn-play"
+                        style="width:100%; border-radius:12px; margin-bottom:15px; font-size:1rem;">
+                        SET TIME & NEXT (Enter)
+                    </button>
+                    <div id="syncList"></div>
+                </div>
+
+                <div id="viewContainer" style="display: none;">
+                    <div class="layer-toggles">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleLayer1" checked>
+                            <span class="slider"></span>
+                            Layer 1
+                        </label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleLayer2" checked>
+                            <span class="slider"></span>
+                            Layer 2
+                        </label>
+                    </div>
+                    <div id="subtitleViewer" class="subtitle-viewer lyric-window"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 右側：サイドバー -->
+        <aside class="sidebar">
+            <section class="glass-card note-area">
+                <p class="section-title">Study Notes</p>
+                <textarea id="noteInput" placeholder="気づいたことをメモ..."></textarea>
+            </section>
+
+            <section class="glass-card">
+                <p class="section-title">Anchors (Bookmarks)</p>
+                <div id="anchorList" class="anchor-list"></div>
+            </section>
+            <section class="glass-card">
+                <p class="section-title">How to Use</p>
+                <div class="help-section">
+                    <div class="help-step">
+                        <strong>1. Edit (文章入力)</strong>
+                        <p>学習したい文章を入力します。翻訳(Layer 2)も併記可能です。</p>
+                    </div>
+                    <div class="help-step">
+                        <strong>2. Sync (時間記録)</strong>
+                        <p>音源を再生しながら <span class="help-tag">Enter</span> を押して各行の開始時間を記録します。</p>
+                    </div>
+                    <div class="help-step">
+                        <strong>3. View (学習)</strong>
+                        <p>自動で流れる歌詞を見ながらリスニング。タップで任意の場所から再生できます。</p>
+                    </div>
+                </div>
+            </section>
+            <section class="glass-card">
+                <p class="section-title">Support & Terms</p>
+                <div class="help-section">
+                    <button class="btn-support" onclick="alert('応援ありがとうございます！(ここにリンクなどを設定できます)')">
+                        ☕ 開発者を応援する
+                    </button>
+                    <div class="privacy-box">
+                        <p><strong>プライバシーについて:</strong></p>
+                        <p>本アプリに入力されたテキストや記録されたデータは、すべてお使いのブラウザ内(localStorage)にのみ保存されます。サーバーへの送信や収集は一切行われません。</p>
+                    </div>
+                </div>
+            </section>
+        </aside>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
